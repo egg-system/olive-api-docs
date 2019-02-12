@@ -41,6 +41,16 @@ paths:
               name:
                 type: "string"
                 example: "doggie"
+              product:
+                properties:
+                  id: 
+                    #データ型
+                    type: "integer"
+                    #ダミー値
+                    example: "1"
+                  name:
+                    type: "string"
+                    example: "hogehoge"
         400:
           description: "失敗時のレスポンス"
           schema:
