@@ -60,7 +60,7 @@ paths:
                 type: "string"
                 example: "request bad error"
   /login/:
-    get:
+    post:
       tags: ["hikaru API"]
       summary: "ログインAPI"
       description: "ログイン情報を取得するAPI"
