@@ -59,7 +59,7 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /login/:
+  /api/login/:
     post:
       tags: ["hikaru API"]
       summary: "ログインAPI"
@@ -114,3 +114,67 @@ paths:
               error:
                 type: "string"
                 example: "User Not Found"
+  /api/reserve/commit/:
+    post:
+      tags: ["hikaru API"]
+      summary: "予約確定API"
+      description: "予約を確定するAPI"
+      parameters:
+      - name: "menuId"
+        in: "query"
+        description: "予約メニューID"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "isFirst"
+        in: "query"
+        description: "初回利用"
+        required: true
+        type: "boolean"
+      - name: "isUsecoupon"
+        in: "query"
+        description: "クーポン利用"
+        required: false
+        type: "boolean"
+      - name: "pregnancyTerm"
+        in: "query"
+        description: "妊娠有無<br>0:妊娠なし<br>1:4ヵ月未満<br>2:5ヵ月<br>3:6ヵ月<br>4:7ヵ月<br>5:8ヵ月<br>6:9ヵ月<br>7:10ヵ月"
+        required: false
+        type: "integer"
+        enum: [0,1,2,3,4,5,6,7]
+      - name: "children"
+        in: "query"
+        description: "お子様連れ<br>0:なし<br>1:1人<br>2:2人<br>3:3人<br>4:4人<br>5:5人以上"
+        required: false
+        type: "integer"
+        enum: [0,1,2,3,4,5]
+      - name: "isGetMessage"
+        in: "query"
+        description: "サロンからのメッセージを受け取るかどうか"
+        required: false
+        type: "boolean"
+      - name: "request"
+        in: "query"
+        description: "サロンへのご要望・ご相談"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: "200"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: "400"
+              error:
+                type: "string"
+                example: "Bad Request"
