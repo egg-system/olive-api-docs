@@ -11,24 +11,18 @@ info:
     url: "https://eggsystem.co.jp/"
 host: "reserve.olivebodycare.healthcare"
 paths:
-  /pet/{petId}:
+  /api/store/{id}:
     get:
       tags: ["shun API"]
-      summary: "ペット情報API"
-      description: "指定されたpetIdの情報を返します"
+      summary: "店舗情報API"
+      description: "指定されたidの店舗情報を返します"
       parameters:
-      - name: "petId"
+      - name: "id"
         in: "path"
-        description: "取得したいペットのID"
+        description: "店舗のID"
         required: true
         type: "integer"
         format: "int64"
-      - name: "petId2"
-        in: "query"
-        description: "取得したいペットのID2"
-        required: false
-        type: "integer"
-        format: "int"
       responses:
         200:
           description: "成功時のレスポンス"
@@ -38,19 +32,30 @@ paths:
               id:
                 type: "integer"
                 format: "int64"
+                example: "1"
               name:
                 type: "string"
-                example: "doggie"
-              product:
-                properties:
-                  id: 
-                    #データ型
-                    type: "integer"
-                    #ダミー値
-                    example: "1"
-                  name:
-                    type: "string"
-                    example: "hogehoge"
+                example: "オリーブボディケア　たまプラーザ店"
+              open_at:
+                description: "営業開始時間"
+                type: "string"
+                format: "hh"
+                example: "10"
+              close_at:
+                description: "営業終了時間"
+                type: "string"
+                format: "hh"
+                example: "20"
+              break_from:
+                description: "休憩開始時間"
+                type: "string"
+                format: "hh"
+                example: "14"
+              break_to:
+                description: "休憩終了時間"
+                type: "string"
+                format: "hh"
+                example: "16"
         400:
           description: "失敗時のレスポンス"
           schema:
