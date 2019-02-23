@@ -11,7 +11,7 @@ info:
     url: "https://eggsystem.co.jp/"
 host: "reserve.olivebodycare.healthcare"
 paths:
-  /api/store/{id}:
+  /api/stores/{id}:
     get:
       tags: ["shun API"]
       summary: "店舗情報API"
@@ -64,7 +64,7 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/store/{id}/menus:
+  /api/stores/{id}/menus:
     get:
       tags: ["shun API"]
       summary: "メニュー一覧API"
@@ -118,6 +118,7 @@ paths:
                             example: "6000"
                           description:
                             type: "string"
+                            nullable: "true"
                             example: "？？？？"
                           options:
                             type: "array"
@@ -140,11 +141,79 @@ paths:
                                   description: "最大個数。未使用ならnull。"
                                   type: "integer"
                                   format: "int64"
+                                  nullable: "true"
                                   example: "10"
                                 unit:
                                   description: "個数単位。未使用ならnull。"
                                   type: "string"
+                                  nullable: "true"
                                   example: "粒"
+        400:
+          description: "失敗時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "request bad error"
+  /api/stores/{id}/menus/{menuId}/dates:
+    get:
+      tags: ["shun API"]
+      summary: "予約カレンダーAPI"
+      description: "指定された店舗id、メニューidから予約カレンダーを表示するための情報を返します"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "店舗のID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "menuId"
+        in: "path"
+        description: "メニューのID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              date_slots:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    date:
+                      type: "string"
+                      format: "yyyymmdd"
+                      example: "20190228"
+                    closed_date_flg:
+                      type: "boolean"
+                      example: "false"
+                    time_slots:
+                      type: "array"
+                      nullable: "true"
+                      items:
+                        type: "object"
+                        properties:
+                          id:
+                            type: "integer"
+                            format: "int64"
+                            example: "1"
+                          start_time:
+                            type: "string"
+                            format: "yyyymmddhh"
+                            example: "2019022810"
+                          remain:
+                            type: "integer"
+                            format: "int64"
+                            nullable: "true"
+                            example: "3"
+                          closed_time_flg:
+                            type: "boolean"
+                            example: "false"
         400:
           description: "失敗時のレスポンス"
           schema:
