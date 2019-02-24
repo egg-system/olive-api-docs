@@ -11,7 +11,7 @@ info:
     url: "https://eggsystem.co.jp/"
 host: "reserve.olivebodycare.healthcare"
 paths:
-  /api/stores/{id}:
+  /api/shops/{id}:
     get:
       tags: ["shun API"]
       summary: "店舗情報API"
@@ -64,7 +64,7 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/stores/{id}/menus:
+  /api/shops/{id}/menus:
     get:
       tags: ["shun API"]
       summary: "メニュー一覧API"
@@ -82,7 +82,7 @@ paths:
           schema:
             type: "object"
             properties:
-              sub_stores:
+              sub_shops:
                 type: "array"
                 items:
                   type: "object"
@@ -156,7 +156,7 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/stores/{id}/menus/{menuId}/dates:
+  /api/shops/{id}/menus/{menuId}/dates:
     get:
       tags: ["shun API"]
       summary: "予約カレンダーAPI"
