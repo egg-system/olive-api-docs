@@ -245,19 +245,19 @@ paths:
           schema:
             type: "object"
             properties:
-              firstName:
+              first_name:
                 type: "string"
                 example: "山田"
-              lastName:
+              last_name:
                 type: "string"
                 example: "太郎"
-              firstNameKana:
+              first_name_kana:
                 type: "string"
                 example: "ヤマダ"
-              lastNameKana:
+              last_name_kana:
                 type: "string"
                 example: "タロウ"
-              phoneNumber:
+              phone_number:
                 type: "integer"
                 format: "int32"
                 example: "09012345678"
@@ -283,23 +283,23 @@ paths:
       summary: "予約確定API"
       description: "予約を確定するAPI"
       parameters:
-      - name: "menuId"
+      - name: "menu_id"
         in: "query"
         description: "予約メニューID"
         required: true
         type: "integer"
         format: "int32"
-      - name: "isFirst"
+      - name: "is_first"
         in: "query"
         description: "初回利用"
         required: true
         type: "boolean"
-      - name: "isUsecoupon"
+      - name: "is_use_coupon"
         in: "query"
         description: "クーポン利用"
         required: false
         type: "boolean"
-      - name: "pregnancyTerm"
+      - name: "pregnancy_term"
         in: "query"
         description: "妊娠有無<br>0:妊娠なし<br>1:4ヵ月未満<br>2:5ヵ月<br>3:6ヵ月<br>4:7ヵ月<br>5:8ヵ月<br>6:9ヵ月<br>7:10ヵ月"
         required: false
@@ -311,7 +311,7 @@ paths:
         required: false
         type: "integer"
         enum: [0,1,2,3,4,5]
-      - name: "isGetMessage"
+      - name: "is_get_message"
         in: "query"
         description: "サロンからのメッセージを受け取るかどうか"
         required: false
