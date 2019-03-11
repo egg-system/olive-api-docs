@@ -393,11 +393,10 @@ paths:
         type: "boolean"
       - name: "customer_id"
         in: "query"
-        description: "顧客ID"
+        description: "顧客ID<br>ログイン済みの場合はIDをつける。未ログインの場合は空にする"
         required: false
         type: "integer"
         format: "int32"
-        description: "ログイン済みの場合はIDをつける。未ログインの場合は空にする"
       - name: "is_use_coupon"
         in: "query"
         description: "クーポン利用"
