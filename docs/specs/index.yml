@@ -389,7 +389,7 @@ paths:
         in: "query"
         description: "ハッシュ化された新パスワード"
         required: true
-        type: "integer"
+        type: "string"
         format: "password"
       responses:
         200:
