@@ -329,53 +329,148 @@ paths:
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "200"
+              result:
+                type: "string"
+                example: "ok"
         400:
           description: "パラメータエラー"
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "400"
               error:
                 type: "string"
                 example: "Bad Request"
-  /api/customer/reset/:
+  /api/customer/password/reset/:
     get:
       tags: ["hikaru API"]
       summary: "パスワードリセットAPI"
-      description: "ユーザーのパスワードをリセットするAPI。成功した場合はサーバサイドでユーザーにパスワードリセットメールを送る"
+      description: "ユーザーのパスワードをリセットするAPI。成功した場合はサーバサイドでパスワードリセット用のトークン(有効期限30分)を発行しメールでユーザーに通知する。"
       parameters:
       - name: "mail"
         in: "query"
         description: "メールアドレス"
         required: true
         type: "string"
+      - name: "phone_number"
+        in: "query"
+        description: "電話番号"
+        required: true
+        type: "integer"
+        format: "int32"
       responses:
         200:
           description: "成功時のレスポンス"
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "200"
+              result:
+                type: "string"
+                example: "ok"
         400:
           description: "パラメータエラー"
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "400"
+              error:
+                type: "string"
+                example: "Bad Request"
+  /api/customer/password/update/:
+    patch:
+      tags: ["hikaru API"]
+      summary: "パスワード更新API"
+      description: "パスワードを更新するAPI。パスワード更新にはトークンを使うためプロフィール更新とはAPIを分ける"
+      parameters:
+      - name: "token"
+        in: "query"
+        description: "トークン"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "ハッシュ化された新パスワード"
+        required: true
+        type: "integer"
+        format: "password"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+                example: "ok"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+  /api/customer/profile/update/:
+    patch:
+      tags: ["hikaru API"]
+      summary: "プロフィール更新API"
+      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける"
+      parameters:
+      - name: "mail"
+        in: "query"
+        description: "メールアドレス"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "ハッシュ化されたパスワード"
+        required: true
+        type: "integer"
+        format: "password"
+      - name: "first_name"
+        in: "query"
+        description: "苗字"
+        required: true
+        type: "string"
+      - name: "last_name"
+        in: "query"
+        description: "名前"
+        required: true
+        type: "string"
+      - name: "first_name_kana"
+        in: "query"
+        description: "苗字カナ"
+        required: true
+        type: "string"
+      - name: "last_name_kana"
+        in: "query"
+        description: "名前カナ"
+        required: true
+        type: "string"
+      - name: "phone_number"
+        in: "query"
+        description: "電話番号"
+        required: true
+        type: "integer"
+        format: "int32"
+
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+                example: "ok"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
               error:
                 type: "string"
                 example: "Bad Request"
   /api/reserve/commit/:
-    get:
+    post:
       tags: ["hikaru API"]
       summary: "予約確定API"
       description: "予約を確定するAPI"
@@ -430,17 +525,100 @@ paths:
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "200"
+              result:
+                type: "string"
+                example: "ok"
         400:
           description: "パラメータエラー"
           schema:
             type: "object"
             properties:
-              status:
-                type: "integer"
-                example: "400"
+              error:
+                type: "string"
+                example: "Bad Request"
+  /api/reserve/cancel/:
+    get:
+      tags: ["hikaru API"]
+      summary: "予約キャンセルAPI"
+      description: "予約をキャンセルするAPI"
+      parameters:
+      - name: "menu_id"
+        in: "query"
+        description: "予約メニューID"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+                example: "ok"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+  /api/reserve/list/:
+    get:
+      tags: ["hikaru API"]
+      summary: "予約一覧取得API"
+      description: "予約情報を一覧で取得するAPI"
+      parameters:
+      - name: "mail"
+        in: "query"
+        description: "メールアドレス"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "ハッシュ化されたパスワード"
+        required: true
+        type: "string"
+        format: "password"
+      - name: "start"
+        in: "query"
+        description: "取得開始位置"
+        required: false
+        type: "integer"
+      - name: "result"
+        in: "query"
+        description: "取得件数"
+        required: false
+        type: "integer"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "array"
+                items:
+                  example:
+                    - id: 123
+                      date: "20190310"
+                      menu: "通常整体コース"
+                      price: 6000
+                    - id: 456
+                      date: "20190311"
+                      menu: "通常整体コース"
+                      price: 8000
+                    - id: 789
+                      date: "20190312"
+                      menu: "通常整体コース"
+                      price: 6000
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
               error:
                 type: "string"
                 example: "Bad Request"
