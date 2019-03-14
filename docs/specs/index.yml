@@ -378,7 +378,7 @@ paths:
     patch:
       tags: ["hikaru API"]
       summary: "パスワード更新API"
-      description: "パスワードを更新するAPI。パスワード更新にはトークンを使うためプロフィール更新とはAPIを分ける"
+      description: "パスワードを更新するAPI。サーバイドでトークンのチェックを行う。パスワード更新にはトークンを使うためプロフィール更新とはAPIを分ける"
       parameters:
       - name: "token"
         in: "query"
