@@ -263,7 +263,7 @@ paths:
               phone_number:
                 type: "integer"
                 format: "int32"
-                example: "09012345678"
+                example: 09012345678
         400:
           description: "パラメータエラー"
           schema:
@@ -571,17 +571,11 @@ paths:
       summary: "予約一覧取得API"
       description: "予約情報を一覧で取得するAPI"
       parameters:
-      - name: "mail"
+      - name: "customer_id"
         in: "query"
-        description: "メールアドレス"
+        description: "カスタマーID"
         required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "ハッシュ化されたパスワード"
-        required: true
-        type: "string"
-        format: "password"
+        type: "integer"
       - name: "start"
         in: "query"
         description: "取得開始位置"
@@ -603,17 +597,71 @@ paths:
                 items:
                   example:
                     - id: 123
-                      date: "20190310"
-                      menu: "通常整体コース"
+                      date: 20190310
+                      menu: "通常整体コース 60分"
                       price: 6000
+                      caccel_flag: true
                     - id: 456
-                      date: "20190311"
-                      menu: "通常整体コース"
+                      date: 20190311
+                      menu: "通常整体コース 120分"
                       price: 8000
+                      caccel_flag: false
                     - id: 789
-                      date: "20190312"
-                      menu: "通常整体コース"
+                      date: 20190312
+                      menu: "通常整体コース 60分"
                       price: 6000
+                      caccel_flag: false
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+  /api/coupons/:
+    get:
+      tags: ["hikaru API"]
+      summary: "回数券残数取得API"
+      description: "回数券の残数をで取得するAPI。施術回数券とインデプス回数券の2種類を返す"
+      parameters:
+      - name: "customer_id"
+        in: "query"
+        description: "カスタマーID"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              operation:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    count:
+                      type: "integer"
+                      format: "int64"
+                      example: "5"
+                    expire:
+                      type: "integer"
+                      format: "int64"
+                      example: 20190331
+              indeps:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    count:
+                      type: "integer"
+                      format: "int64"
+                      example: "3"
+                    expire:
+                      type: "integer"
+                      format: "int64"
+                      example: 20190430
         400:
           description: "パラメータエラー"
           schema:
