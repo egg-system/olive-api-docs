@@ -156,7 +156,7 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/shops/{id}/menus/{menuId}/dates:
+  /api/shops/{id}/dates:
     get:
       tags: ["shun API"]
       summary: "予約カレンダーAPI"
@@ -168,12 +168,14 @@ paths:
         required: true
         type: "integer"
         format: "int64"
-      - name: "menuId"
-        in: "path"
-        description: "メニューのID"
+      - name: "menu_id"
         required: true
-        type: "integer"
-        format: "int64"
+        in: "query"
+        type: "array"
+        description: "メニューID一覧"
+        items:
+          type: "integer"
+          format: "int64"
       responses:
         200:
           description: "成功時のレスポンス"
