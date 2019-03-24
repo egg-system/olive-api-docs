@@ -267,14 +267,14 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
-        404:
-          description: "ユーザー Not Found"
+        401:
+          description: "認証エラー"
           schema:
             type: "object"
             properties:
               error:
                 type: "string"
-                example: "User Not Found"
+                example: "Unauthorized"
   /api/customer/create/:
     post:
       tags: ["hikaru API"]
@@ -455,6 +455,14 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
   /api/reserve/commit/:
     post:
       tags: ["hikaru API"]
@@ -524,6 +532,14 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
   /api/reserve/cancel/:
     get:
       tags: ["hikaru API"]
@@ -555,6 +571,14 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
   /api/reserve/list/:
     get:
       tags: ["hikaru API"]
@@ -606,6 +630,14 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
   /api/coupons/:
     get:
       tags: ["hikaru API"]
@@ -659,3 +691,11 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
