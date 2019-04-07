@@ -463,7 +463,7 @@ paths:
       summary: "予約確定API"
       description: "予約を確定するAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
       security:
-        - basicAuth: []      
+        - basicAuth: []
       parameters:
       - name: "menu_id"
         in: "query"
@@ -540,7 +540,7 @@ paths:
       summary: "予約キャンセルAPI"
       description: "予約をキャンセルするAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
       security:
-        - basicAuth: [] 
+        - basicAuth: []
       parameters:
       - name: "menu_id"
         in: "query"
@@ -579,7 +579,7 @@ paths:
       summary: "予約一覧取得API"
       description: "予約情報を一覧で取得するAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
       security:
-        - basicAuth: [] 
+        - basicAuth: []
       parameters:
       - name: "start"
         in: "query"
@@ -693,3 +693,127 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
+
+  /api/reserve/commit/_tmp:
+    post:
+      tags: ["要レビュー API"]
+      summary: "予約確定API【改】"
+      description: "予約登録を行うAPI。<br>1.新規ユーザーによる予約+新規ユーザー登録<br>2.ユーザー登録を行わず予約だけ行う<br>3.ログイン済みユーザーによる予約<br>の3パターンがある。<br>ログイン済みユーザーによる予約場合は、ユーザー情報の登録も行う。<br>ログイン済みかどうかの判別は以下のbasic認証情報が付与されているかどうかで判別する。<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: postData
+          schema:
+            type: object
+            properties:
+              first_visit_flg:
+                type: boolean
+                description: "初回利用"
+                example: true
+              children_number:
+                type: integer
+                example: 3
+                description: "お子様連れ
+                              0:なし
+                              1:1人
+                              2:2人
+                              3:3人
+                              4:4人
+                              5:5人以上"
+
+              pregnant_status_id:
+                type: integer
+                example: 3
+                description: "妊娠ステータスID
+                            1：妊娠なし
+                            2：4ヶ月未満
+                            3：5ヶ月
+                            4：6ヶ月
+                            5：7ヶ月
+                            6：8ヶ月"
+              reservation_comment:
+                type: string
+                example: ""
+                description: "サロンへのご要望・ご相談"
+              reservations:
+                description: "予約する予約枠の一覧。<br>２時間続けて予約する場合は、配列に要素が複数格納される。"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    start_time:
+                      type: "string"
+                      format: "yyyymmddhh"
+                      description: "予約した施術の開始時刻"
+                      example: "2019022810"
+                    menus:
+                      type: array
+                      description: "予約したメニュー一覧。基本メニューとオプション"
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            format: integer
+                            description: "メニューID"
+                            example: 10
+                          number:
+                            format: integer
+                            description: "個数。耳つぼジュエリー以外は1"
+                            example: 1
+                    coupon_ids:
+                      type: array
+                      description: "使用するクーポンIDの一覧。基本メニュー回数券、インデプス回数券など複数格納するパターンもあるので配列で格納する。"
+                      items:
+                        type: integer
+                        description: クーポンID。
+                        example: 1
+              user:
+                type: object
+                properties:
+                  first_name:
+                    type: string
+                    description: "姓"
+                    example: "山田"
+                  last_name:
+                    type: string
+                    description: "名"
+                    example: "太郎"
+                  first_name_kana:
+                    type: string
+                    description: "姓（カナ）"
+                    example: "ヤマダ"
+                  last_name_kana:
+                    type: string
+                    description: "名（カナ）"
+                    example: "タロウ"
+                  phone_number:
+                    type: string
+                    description: "電話番号"
+                    example: "09011112222"
+                  member_flg:
+                    type: boolean
+                    description: "会員登録するかどうか"
+                    example: true
+                  password:
+                    type: string
+                    description: "パスワード"
+                    example: "xETd892"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+                example: "ok"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+
