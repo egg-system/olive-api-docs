@@ -312,6 +312,11 @@ paths:
         required: true
         type: "integer"
         format: "int32"
+      - name: "can_receive_mail"
+        in: "query"
+        description: "メール受け取り可否"
+        required: true
+        type: "boolean"
       responses:
         200:
           description: "成功時のレスポンス"
@@ -431,6 +436,11 @@ paths:
         required: true
         type: "integer"
         format: "int32"
+      - name: "can_receive_mail"
+        in: "query"
+        description: "メール受け取り可否"
+        required: true
+        type: "boolean"
 
       responses:
         200:
@@ -711,6 +721,9 @@ paths:
                 type: boolean
                 description: "初回利用"
                 example: true
+              email:
+                type: string
+                description:
               children_number:
                 type: integer
                 example: 3
@@ -736,6 +749,37 @@ paths:
                 type: string
                 example: ""
                 description: "サロンへのご要望・ご相談"
+              total_minutes:
+                type: integer
+                example: 60
+                descriptin: "合計施術時間"
+              start_time:
+                type: "string"
+                format: "yyyymmddhh"
+                description: "予約した施術の開始時刻"
+                example: "2019022810"
+              menus:
+                type: array
+                description: "予約したメニュー一覧。基本メニューとオプション"
+                items:
+                  type: object
+                  properties:
+                    id:
+                      format: integer
+                      description: "メニューID"
+                      example: 10
+                    number:
+                      format: integer
+                      description: "個数。耳つぼジュエリー以外は1"
+                      example: 1
+              coupon_ids:
+                type: array
+                description: "使用するクーポンIDの一覧。基本メニュー回数券、インデプス回数券など複数格納するパターンもあるので配列で格納する。"
+                items:
+                  type: integer
+                  description: クーポンID。
+                  example: 1
+
               reservations:
                 description: "予約する予約枠の一覧。<br>２時間続けて予約する場合は、配列に要素が複数格納される。"
                 type: array
@@ -761,45 +805,6 @@ paths:
                             format: integer
                             description: "個数。耳つぼジュエリー以外は1"
                             example: 1
-                    coupon_ids:
-                      type: array
-                      description: "使用するクーポンIDの一覧。基本メニュー回数券、インデプス回数券など複数格納するパターンもあるので配列で格納する。"
-                      items:
-                        type: integer
-                        description: クーポンID。
-                        example: 1
-              customer:
-                type: object
-                description: "登録するユーザー情報。ログイン済みユーザーの場合はnull。"
-                properties:
-                  first_name:
-                    type: string
-                    description: "姓"
-                    example: "山田"
-                  last_name:
-                    type: string
-                    description: "名"
-                    example: "太郎"
-                  first_name_kana:
-                    type: string
-                    description: "姓（カナ）"
-                    example: "ヤマダ"
-                  last_name_kana:
-                    type: string
-                    description: "名（カナ）"
-                    example: "タロウ"
-                  phone_number:
-                    type: string
-                    description: "電話番号"
-                    example: "09011112222"
-                  member_flg:
-                    type: boolean
-                    description: "会員登録するかどうか"
-                    example: true
-                  password:
-                    type: string
-                    description: "パスワード"
-                    example: "xETd892"
       responses:
         200:
           description: "成功時のレスポンス"
