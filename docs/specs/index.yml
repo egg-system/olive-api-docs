@@ -770,6 +770,7 @@ paths:
                         example: 1
               user:
                 type: object
+                description: "登録するユーザー情報。ログイン済みユーザーの場合はnull。"
                 properties:
                   first_name:
                     type: string
