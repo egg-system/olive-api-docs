@@ -768,7 +768,7 @@ paths:
                         type: integer
                         description: クーポンID。
                         example: 1
-              user:
+              customer:
                 type: object
                 description: "登録するユーザー情報。ログイン済みユーザーの場合はnull。"
                 properties:
