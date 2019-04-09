@@ -275,7 +275,7 @@ paths:
       summary: "ユーザー作成API"
       description: "ユーザーを作成するAPI。成功の場合はサーバサイドでユーザー作成処理を行う。"
       parameters:
-      - name: "mail"
+      - name: "email"
         in: "query"
         description: "メールアドレス"
         required: true
@@ -317,6 +317,12 @@ paths:
         description: "メール受け取り可否"
         required: true
         type: "boolean"
+      - name: "shop_id"
+        in: "query"
+        description: "登録店舗ID"
+        required: true
+        type: "integer"
+        format: "int32"
       responses:
         200:
           description: "成功時のレスポンス"
