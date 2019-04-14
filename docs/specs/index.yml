@@ -721,94 +721,14 @@ paths:
           schema:
             type: object
             properties:
-              first_visit_flg:
-                type: boolean
-                description: "初回利用"
-                example: true
-              email:
-                type: string
-                description:
-              children_number:
-                type: integer
-                example: 3
-                description: "お子様連れ
-                              0:なし
-                              1:1人
-                              2:2人
-                              3:3人
-                              4:4人
-                              5:5人以上"
-
-              pregnant_status_id:
-                type: integer
-                example: 3
-                description: "妊娠ステータスID
-                            1：妊娠なし
-                            2：4ヶ月未満
-                            3：5ヶ月
-                            4：6ヶ月
-                            5：7ヶ月
-                            6：8ヶ月"
-              reservation_comment:
-                type: string
-                example: ""
-                description: "サロンへのご要望・ご相談"
-              total_minutes:
-                type: integer
-                example: 60
-                descriptin: "合計施術時間"
-              start_time:
-                type: "string"
-                format: "yyyymmddhh"
-                description: "予約した施術の開始時刻"
-                example: "2019022810"
-              menus:
-                type: array
-                description: "予約したメニュー一覧。基本メニューとオプション"
-                items:
-                  type: object
-                  properties:
-                    id:
-                      format: integer
-                      description: "メニューID"
-                      example: 10
-                    number:
-                      format: integer
-                      description: "個数。耳つぼジュエリー以外は1"
-                      example: 1
-              coupon_ids:
-                type: array
-                description: "使用するクーポンIDの一覧。基本メニュー回数券、インデプス回数券など複数格納するパターンもあるので配列で格納する。"
-                items:
-                  type: integer
-                  description: クーポンID。
-                  example: 1
-
-              reservations:
-                description: "予約する予約枠の一覧。<br>２時間続けて予約する場合は、配列に要素が複数格納される。"
-                type: array
-                items:
-                  type: object
-                  properties:
-                    start_time:
-                      type: "string"
-                      format: "yyyymmddhh"
-                      description: "予約した施術の開始時刻"
-                      example: "2019022810"
-                    menus:
-                      type: array
-                      description: "予約したメニュー一覧。基本メニューとオプション"
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            format: integer
-                            description: "メニューID"
-                            example: 10
-                          number:
-                            format: integer
-                            description: "個数。耳つぼジュエリー以外は1"
-                            example: 1
+              shop_id:
+                type: "integer"
+                example: 1
+                description: "対象店舗のID"
+              reservation:
+                $ref: "#/definitions/Reservation"
+              customer:
+                $ref: "#/definitions/Customer"
       responses:
         200:
           description: "成功時のレスポンス"
@@ -826,3 +746,121 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
+
+definitions:
+  Reservation:
+    type: "object"
+    description: ""
+    properties:
+      start_time:
+        type: "string"
+        format: "yyyymmddhh"
+        description: "予約した施術の開始時刻"
+        example: "2019022810"
+      total_minutes:
+        type: integer
+        example: 60
+        description: "合計施術時間"
+      children_count:
+        type: integer
+        example: 3
+        description: "お子様連れ
+                      0:なし
+                      1:1人
+                      2:2人
+                      3:3人
+                      4:4人
+                      5:5人以上"
+
+      pregnant_state_id:
+        type: integer
+        example: 3
+        description: "妊娠ステータスID
+                    1：妊娠なし
+                    2：4ヶ月未満
+                    3：5ヶ月
+                    4：6ヶ月
+                    5：7ヶ月
+                    6：8ヶ月"
+      reservation_comment:
+        type: string
+        example: ""
+        description: "サロンへのご要望・ご相談"
+      menus:
+        type: "array"
+        items:
+          $ref: "#/definitions/SelectedMenu"
+      coupons:
+        type: "array"
+        items:
+          $ref: "#/definitions/UsedCoupon"
+
+
+  Customer:
+    type: "object"
+    properties:
+      email:
+        description: "メールアドレス"
+        type: "string"
+        example: "test@aaa.com"
+      password:
+        description: "パスワード：新規登録かつ会員登録を行わない場合はnull"
+        type: "string"
+        format: "password"
+        example: "exT98X"
+      first_name:
+        description: "苗字"
+        type: "string"
+        example: "山田"
+      last_name:
+        description: "名前"
+        type: "string"
+        example: "太郎"
+      first_kana:
+        description: "苗字カナ"
+        type: "string"
+        example: "ヤマダ"
+      last_kana:
+        description: "名前カナ"
+        type: "string"
+        example: "タロウ"
+      tel:
+        description: "電話番号（ハイフンなし）"
+        type: "string"
+        example: "09099004411"
+      has_membership:
+        description: "会員登録の有無。"
+        type: "boolean"
+      can_receive_mail:
+        description: "メール受け取り可否"
+        type: "boolean"
+  SelectedMenu:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      options:
+        type: "array"
+        items:
+          $ref: "#/definitions/SelectedOption" # Storeを呼び出す
+  SelectedOption:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      count:
+        type: "integer"
+        format: "int64"
+        example: 1
+        description: "耳つぼジュエリーの場合に個数を入れる。それ以外はnull"
+  UsedCoupon:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 1
