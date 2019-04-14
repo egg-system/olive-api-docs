@@ -1,4 +1,5 @@
 swagger: "2.0"
+#openapi: 3.0.0
 info:
   description: "oliveサロンのフロントエンドで必要なAPIです"
   version: "1.0.0"
@@ -11,8 +12,17 @@ info:
     url: "https://eggsystem.co.jp/"
 host: "reserve.olivebodycare.healthcare"
 securityDefinitions:
+  # basic認証
   basicAuth:
     type: basic
+  # cookie認証
+  cookieAuth:
+    type: apiKey
+    # 本当はcookieにセットする(swager2.0だとcookieセットがないため)
+    # https://swagger.io/docs/specification/2-0/authentication/api-keys/
+    in: header
+    # cookie認証を擬似的に表現
+    name: "Cookie: SESSION="
 paths:
   /api/shops/{id}:
     get:
@@ -225,7 +235,7 @@ paths:
     get:
       tags: ["hikaru API"]
       summary: "ログインAPI"
-      description: "ログイン情報を取得するAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "ログイン情報を取得するAPI。<br>ユーザー認証にbasic認証を使う。<br>(username→メールアドレス/password→ハッシュ化されたパスワード)<br>成功したらCookieにセッションIDがセットされる。"
       security:
         - basicAuth: []
       responses:
@@ -406,9 +416,9 @@ paths:
     patch:
       tags: ["hikaru API"]
       summary: "プロフィール更新API"
-      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
       security:
-        - basicAuth: []
+        - cookieAuth: []
       parameters:
       - name: "first_name"
         in: "query"
@@ -471,9 +481,9 @@ paths:
     post:
       tags: ["hikaru API"]
       summary: "予約確定API"
-      description: "予約を確定するAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "予約を確定するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
       security:
-        - basicAuth: []
+        - cookieAuth: []
       parameters:
       - name: "menu_id"
         in: "query"
@@ -548,9 +558,9 @@ paths:
     get:
       tags: ["hikaru API"]
       summary: "予約キャンセルAPI"
-      description: "予約をキャンセルするAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "予約をキャンセルするAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
       security:
-        - basicAuth: []
+        - cookieAuth: []
       parameters:
       - name: "menu_id"
         in: "query"
@@ -587,9 +597,9 @@ paths:
     get:
       tags: ["hikaru API"]
       summary: "予約一覧取得API"
-      description: "予約情報を一覧で取得するAPI。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "予約情報を一覧で取得するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
       security:
-        - basicAuth: []
+        - cookieAuth: []
       parameters:
       - name: "start"
         in: "query"
@@ -646,15 +656,9 @@ paths:
     get:
       tags: ["hikaru API"]
       summary: "回数券残数取得API"
-      description: "回数券の残数をで取得するAPI。施術回数券とインデプス回数券の2種類を返す。<br>ユーザー認証にbasic認証を使う<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
+      description: "回数券の残数をで取得するAPI。施術回数券とインデプス回数券の2種類を返す。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
       security:
-        - basicAuth: []
-      parameters:
-      - name: "customer_id"
-        in: "query"
-        description: "カスタマーID"
-        required: true
-        type: "integer"
+        - cookieAuth: []
       responses:
         200:
           description: "成功時のレスポンス"
@@ -822,4 +826,3 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
-
