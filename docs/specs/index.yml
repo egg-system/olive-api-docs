@@ -292,7 +292,7 @@ paths:
         type: "string"
       - name: "password"
         in: "query"
-        description: "ハッシュ化されたパスワード"
+        description: "パスワード"
         required: true
         type: "string"
         format: "password"
@@ -391,7 +391,7 @@ paths:
         type: "string"
       - name: "password"
         in: "query"
-        description: "ハッシュ化された新パスワード"
+        description: "新パスワード"
         required: true
         type: "string"
         format: "password"
