@@ -186,6 +186,16 @@ paths:
         items:
           type: "integer"
           format: "int64"
+      - name: "from_date"
+        required: true
+        in: "query"
+        type: "string"
+        description: "予約枠の検索開始日付"
+      - name: "to_date"
+        required: true
+        in: "query"
+        type: "string"
+        description: "予約枠の検索終了日付"
       responses:
         200:
           description: "成功時のレスポンス"
