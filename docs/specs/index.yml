@@ -170,7 +170,7 @@ paths:
     get:
       tags: ["shun API"]
       summary: "予約カレンダーAPI"
-      description: "指定された店舗id、メニューidから予約カレンダーを表示するための情報を返します"
+      description: "指定された店舗id、メニューidから予約カレンダーを表示するための情報を返します。\nレスポンスのjsonは日付でグルーピングされた予約枠になります。"
       parameters:
       - name: "id"
         in: "path"
