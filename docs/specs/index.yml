@@ -186,6 +186,14 @@ paths:
         items:
           type: "integer"
           format: "int64"
+      - name: "option_ids"
+        required: false
+        in: "query"
+        type: "array"
+        description: "施術するオプションID"
+        items:
+          type: "integer"
+          format: "int64"
       - name: "from_date"
         required: true
         in: "query"
