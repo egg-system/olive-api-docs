@@ -12,17 +12,22 @@ info:
     url: "https://eggsystem.co.jp/"
 host: "reserve.olivebodycare.healthcare"
 securityDefinitions:
-  # basic認証
+  # basic認証。初期ログイン時に使用予定
   basicAuth:
     type: basic
-  # cookie認証
-  cookieAuth:
+  # 以下、railsのapi-token認証用
+  uid:
     type: apiKey
-    # 本当はcookieにセットする(swager2.0だとcookieセットがないため)
-    # https://swagger.io/docs/specification/2-0/authentication/api-keys/
+    name: uid
     in: header
-    # cookie認証を擬似的に表現
-    name: "Cookie: SESSION="
+  access-token:
+    type: apiKey
+    name: access-token
+    in: header
+  client:
+    type: apiKey
+    name: client
+    in: header
 paths:
   /api/shops/{id}:
     get:
@@ -235,38 +240,63 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/customer/login/:
-    get:
+  /api/customers/sign_in:
+    post:
       tags: ["hikaru API"]
       summary: "ログインAPI"
-      description: "ログイン情報を取得するAPI。<br>ユーザー認証にbasic認証を使う。<br>(username→メールアドレス/password→ハッシュ化されたパスワード)<br>成功したらCookieにセッションIDがセットされる。"
-      security:
-        - basicAuth: []
+      description: "ログイン情報を取得するAPI。返り値はログインしたユーザー情報になる。<br>レスポンスヘッダに認証情報が付与されるため、それを元に認証する"
+      parameters:
+      - name: "email"
+        required: true
+        in: "formData"
+        type: "string"
+        description: "ログイン用のメールアドレス"
+      - name: "password"
+        required: true
+        in: "formData"
+        type: "string"
+        description: "パスワード"
       responses:
         200:
           description: "成功時のレスポンス"
+          headers:
+            uid:
+              description: "認証したユーザーの一意性を担保するid。通常の場合、emailになる"
+              schema:
+                type: "string"
+            access-token:
+              description: "アクセストークン。各ユーザーごとに発行される。期限がある"
+              schema:
+                type: "string"
+            client:
+              description: "同一のクライアントであることを証明するためのランダム文字列"
+              schema:
+                type: "string"
           schema:
             type: "object"
             properties:
-              customer_id:
-                type: "integer"
-                example: "123"
-              first_name:
-                type: "string"
-                example: "山田"
-              last_name:
-                type: "string"
-                example: "太郎"
-              first_name_kana:
-                type: "string"
-                example: "ヤマダ"
-              last_name_kana:
-                type: "string"
-                example: "タロウ"
-              phone_number:
-                type: "integer"
-                format: "int32"
-                example: 09012345678
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: "123"
+                  first_name:
+                    type: "string"
+                    example: "山田"
+                  last_name:
+                    type: "string"
+                    example: "太郎"
+                  first_kana:
+                    type: "string"
+                    example: "ヤマダ"
+                  last_kana:
+                    type: "string"
+                    example: "タロウ"
+                  phone_number:
+                    type: "integer"
+                    format: "int32"
+                    example: 09012345678
         400:
           description: "パラメータエラー"
           schema:
@@ -283,23 +313,22 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-  /api/customer/create/:
+  /api/customers/sign_up:
     post:
       tags: ["hikaru API"]
       summary: "ユーザー作成API"
-      description: "ユーザーを作成するAPI。成功の場合はサーバサイドでユーザー作成処理を行う。"
+      description: "ユーザーを作成するAPI。"
       parameters:
-      - name: "mail"
+      - name: "provider"
+        in: "query"
+        description: "認証方式。emailの場合、通常の会員登録になる。<br>非会員の場合、noneにする。"
+        required: true
+        type: "string"
+      - name: "email"
         in: "query"
         description: "メールアドレス"
         required: true
         type: "string"
-      - name: "password"
-        in: "query"
-        description: "パスワード"
-        required: true
-        type: "string"
-        format: "password"
       - name: "first_name"
         in: "query"
         description: "苗字"
@@ -310,12 +339,12 @@ paths:
         description: "名前"
         required: true
         type: "string"
-      - name: "first_name_kana"
+      - name: "first_kana"
         in: "query"
         description: "苗字カナ"
         required: true
         type: "string"
-      - name: "last_name_kana"
+      - name: "last_kana"
         in: "query"
         description: "名前カナ"
         required: true
@@ -323,6 +352,18 @@ paths:
       - name: "phone_number"
         in: "query"
         description: "電話番号"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "first_visit_store_id"
+        in: "query"
+        description: "予約店舗のid"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "last_visit_store_id"
+        in: "query"
+        description: "予約店舗のid。バックエンド工数短縮のために追加。本来は不要"
         required: true
         type: "integer"
         format: "int32"
@@ -337,9 +378,32 @@ paths:
           schema:
             type: "object"
             properties:
-              result:
+              status:
                 type: "string"
                 example: "ok"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: "123"
+                  first_name:
+                    type: "string"
+                    example: "山田"
+                  last_name:
+                    type: "string"
+                    example: "太郎"
+                  first_kana:
+                    type: "string"
+                    example: "ヤマダ"
+                  last_kana:
+                    type: "string"
+                    example: "タロウ"
+                  phone_number:
+                    type: "integer"
+                    format: "int32"
+                    example: 09012345678
+
         400:
           description: "パラメータエラー"
           schema:
@@ -481,54 +545,76 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-  /api/reserve/commit/:
+  /api/reservations:
     post:
       tags: ["hikaru API"]
       summary: "予約確定API"
-      description: "予約を確定するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
-      security:
-        - cookieAuth: []
+      description: "予約を確定するAPI。現状、ユーザー認証不要。後々、会員の場合のみ認証する用、修正予定"
       parameters:
-      - name: "menu_id"
-        in: "query"
-        description: "予約メニューID"
-        required: true
-        type: "integer"
-        format: "int32"
-      - name: "is_first"
-        in: "query"
-        description: "初回利用"
-        required: true
-        type: "boolean"
       - name: "customer_id"
         in: "query"
-        description: "顧客ID<br>ログイン済みの場合はIDをつける。未ログインの場合は空にする"
-        required: false
+        description: "顧客id"
+        required: true
         type: "integer"
         format: "int32"
-      - name: "is_use_coupon"
+      - name: "store_id"
         in: "query"
-        description: "クーポン利用"
+        description: "店舗id"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "reservation_date"
+        in: "query"
+        description: "予約する日付"
+        required: true
+        type: "string"
+        format: "date"
+      - name: "start_time"
+        in: "query"
+        description: "予約する時刻"
+        required: true
+        type: "string"
+        pattern: "hh:mm"
+      - name: "reservation_details_attributes"
+        in: "query"
+        description: "予約詳細。1時間目から順番になっている。<br>メニューのidとオプションid、耳つぼジュエリーの個数を格納"
+        required: true
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            menu_id:
+              type: "integer"
+              format: "int32"
+            mimitsubo_count:
+              type: "integer"
+              format: "int32"
+            option_ids:
+              type: "array"
+              items:
+                type: "integer"
+                format: "int32"        
+      - name: "coupon_ids"
+        in: "query"
+        description: "利用するクーポンのid"
         required: false
-        type: "boolean"
-      - name: "pregnancy_term"
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+      - name: "pregnant_state_id"
         in: "query"
         description: "妊娠有無<br>0:妊娠なし<br>1:4ヵ月未満<br>2:5ヵ月<br>3:6ヵ月<br>4:7ヵ月<br>5:8ヵ月<br>6:9ヵ月<br>7:10ヵ月"
         required: false
         type: "integer"
         enum: [0,1,2,3,4,5,6,7]
-      - name: "children"
+      - name: "children_count"
         in: "query"
-        description: "お子様連れ<br>0:なし<br>1:1人<br>2:2人<br>3:3人<br>4:4人<br>5:5人以上"
+        description: "お子様の人数"
         required: false
         type: "integer"
-        enum: [0,1,2,3,4,5]
-      - name: "is_get_message"
-        in: "query"
-        description: "サロンからのメッセージを受け取るかどうか"
-        required: false
-        type: "boolean"
-      - name: "request"
+        format: "int32"
+      - name: "reservation_comment"
         in: "query"
         description: "サロンへのご要望・ご相談"
         required: false
@@ -711,46 +797,6 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-
-  /api/reserve/commit/_tmp:
-    post:
-      tags: ["要レビュー API"]
-      summary: "予約確定API【改】"
-      description: "予約登録を行うAPI。<br>1.新規ユーザーによる予約+新規ユーザー登録<br>2.ユーザー登録を行わず予約だけ行う<br>3.ログイン済みユーザーによる予約<br>の3パターンがある。<br>ログイン済みユーザーによる予約場合は、ユーザー情報の登録も行う。<br>ログイン済みかどうかの判別は以下のbasic認証情報が付与されているかどうかで判別する。<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: postData
-          schema:
-            type: object
-            properties:
-              shop_id:
-                type: "integer"
-                example: 1
-                description: "対象店舗のID"
-              reservation:
-                $ref: "#/definitions/Reservation"
-              customer:
-                $ref: "#/definitions/Customer"
-      responses:
-        200:
-          description: "成功時のレスポンス"
-          schema:
-            type: "object"
-            properties:
-              result:
-                type: "string"
-                example: "ok"
-        400:
-          description: "パラメータエラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Bad Request"
-
 definitions:
   Reservation:
     type: "object"
