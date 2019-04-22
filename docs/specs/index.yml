@@ -797,46 +797,6 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-
-  /api/reserve/commit/_tmp:
-    post:
-      tags: ["要レビュー API"]
-      summary: "予約確定API【改】"
-      description: "予約登録を行うAPI。<br>1.新規ユーザーによる予約+新規ユーザー登録<br>2.ユーザー登録を行わず予約だけ行う<br>3.ログイン済みユーザーによる予約<br>の3パターンがある。<br>ログイン済みユーザーによる予約場合は、ユーザー情報の登録も行う。<br>ログイン済みかどうかの判別は以下のbasic認証情報が付与されているかどうかで判別する。<br>(username→メールアドレス/password→ハッシュ化されたパスワード)"
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: postData
-          schema:
-            type: object
-            properties:
-              shop_id:
-                type: "integer"
-                example: 1
-                description: "対象店舗のID"
-              reservation:
-                $ref: "#/definitions/Reservation"
-              customer:
-                $ref: "#/definitions/Customer"
-      responses:
-        200:
-          description: "成功時のレスポンス"
-          schema:
-            type: "object"
-            properties:
-              result:
-                type: "string"
-                example: "ok"
-        400:
-          description: "パラメータエラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Bad Request"
-
 definitions:
   Reservation:
     type: "object"
