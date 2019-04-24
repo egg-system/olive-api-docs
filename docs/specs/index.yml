@@ -293,7 +293,7 @@ paths:
                   last_kana:
                     type: "string"
                     example: "タロウ"
-                  phone_number:
+                  tel:
                     type: "integer"
                     format: "int32"
                     example: 09012345678
@@ -349,7 +349,7 @@ paths:
         description: "名前カナ"
         required: true
         type: "string"
-      - name: "phone_number"
+      - name: "tel"
         in: "query"
         description: "電話番号"
         required: true
@@ -399,7 +399,7 @@ paths:
                   last_kana:
                     type: "string"
                     example: "タロウ"
-                  phone_number:
+                  tel:
                     type: "integer"
                     format: "int32"
                     example: 09012345678
@@ -412,30 +412,55 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
-  /api/customer/password/reset/:
-    get:
+  /api/customers:
+    patch:
       tags: ["hikaru API"]
-      summary: "パスワードリセットAPI"
-      description: "ユーザーのパスワードをリセットするAPI。成功した場合はサーバサイドでパスワードリセット用のトークン(有効期限30分)を発行しメールでユーザーに通知する。"
+      summary: "プロフィール更新API"
+      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      security:
+        - access-token: []
+        - uid: []
+        - client: []
       parameters:
-      - name: "mail"
+      - name: "first_name"
         in: "query"
-        description: "メールアドレス"
+        description: "苗字"
         required: true
         type: "string"
-      - name: "phone_number"
+      - name: "last_name"
+        in: "query"
+        description: "名前"
+        required: true
+        type: "string"
+      - name: "first_kana"
+        in: "query"
+        description: "苗字カナ"
+        required: true
+        type: "string"
+      - name: "last_kana"
+        in: "query"
+        description: "名前カナ"
+        required: true
+        type: "string"
+      - name: "tel"
         in: "query"
         description: "電話番号"
         required: true
         type: "integer"
         format: "int32"
+      - name: "can_receive_mail"
+        in: "query"
+        description: "メール受け取り可否"
+        required: true
+        type: "boolean"
+
       responses:
         200:
           description: "成功時のレスポンス"
           schema:
             type: "object"
             properties:
-              result:
+              status:
                 type: "string"
                 example: "ok"
         400:
@@ -446,20 +471,63 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
-  /api/customer/password/update/:
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
+  /api/customer/password:
+    post:
+      tags: ["hikaru API"]
+      summary: "パスワードリセットAPI"
+      description: "ユーザーのパスワードをリセットするAPI。<br>成功した場合はサーバサイドからメールでユーザーに通知する。<br>メール文面のurlに認証情報が追記されるため、そこから変更可能"
+      parameters:
+      - name: "email"
+        in: "query"
+        description: "メールアドレス"
+        required: true
+        type: "string"
+      - name: "redirect_url"
+        in: "query"
+        description: "パスワード更新用のurl。"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+              message:
+                type: "string"
+                ezample: "{email}にパスワードリセットの案内が送信されました。"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
     patch:
       tags: ["hikaru API"]
       summary: "パスワード更新API"
       description: "パスワードを更新するAPI。サーバイドでトークンのチェックを行う。パスワード更新にはトークンを使うためプロフィール更新とはAPIを分ける"
       parameters:
-      - name: "token"
-        in: "query"
-        description: "トークン"
-        required: true
-        type: "string"
       - name: "password"
         in: "query"
         description: "新パスワード"
+        required: true
+        type: "string"
+        format: "password"
+      - name: "password_confirmation"
+        in: "query"
+        description: "新パスワード（確認用）"
         required: true
         type: "string"
         format: "password"
@@ -480,71 +548,6 @@ paths:
               error:
                 type: "string"
                 example: "Bad Request"
-  /api/customer/profile/update/:
-    patch:
-      tags: ["hikaru API"]
-      summary: "プロフィール更新API"
-      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
-      security:
-        - cookieAuth: []
-      parameters:
-      - name: "first_name"
-        in: "query"
-        description: "苗字"
-        required: true
-        type: "string"
-      - name: "last_name"
-        in: "query"
-        description: "名前"
-        required: true
-        type: "string"
-      - name: "first_name_kana"
-        in: "query"
-        description: "苗字カナ"
-        required: true
-        type: "string"
-      - name: "last_name_kana"
-        in: "query"
-        description: "名前カナ"
-        required: true
-        type: "string"
-      - name: "phone_number"
-        in: "query"
-        description: "電話番号"
-        required: true
-        type: "integer"
-        format: "int32"
-      - name: "can_receive_mail"
-        in: "query"
-        description: "メール受け取り可否"
-        required: true
-        type: "boolean"
-
-      responses:
-        200:
-          description: "成功時のレスポンス"
-          schema:
-            type: "object"
-            properties:
-              result:
-                type: "string"
-                example: "ok"
-        400:
-          description: "パラメータエラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Bad Request"
-        401:
-          description: "認証エラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Unauthorized"
   /api/reservations:
     post:
       tags: ["hikaru API"]
