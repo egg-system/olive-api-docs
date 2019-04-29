@@ -804,6 +804,35 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
+  /api/coupons/_for_review:
+    get:
+      tags: ["for review"]
+      summary: "回数券残数取得API"
+      description: "回数券の残数をで取得するAPI。施術回数券とインデプス回数券の2種類を返す。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CouponType"
+
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
 definitions:
   Reservation:
     type: "object"
@@ -921,3 +950,30 @@ definitions:
         type: "integer"
         format: "int64"
         example: 1
+  CouponType:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      name:
+        type: "string"
+        example: "施術"
+        description: "施術/インデプス/ブライダルエステ"
+      remains:
+        type: "array"
+        description: "有効期限ごとの残り回数券数"
+        items:
+          type: "object"
+          properties:
+            count:
+              type: "integer"
+              format: "int64"
+              example: "5"
+              description: "残り回数券数"
+            expire_at:
+              type: "integer"
+              format: "int64"
+              example: 20190331
+              description: "有効期限"
