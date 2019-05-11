@@ -131,10 +131,6 @@ paths:
                         type: "integer"
                         format: "int64"
                         example: "6000"
-                      description:
-                        type: "string"
-                        nullable: "true"
-                        example: "？？？？"
                       options:
                         type: "array"
                         items:
@@ -156,12 +152,10 @@ paths:
                               description: "最大個数。未使用ならnull。"
                               type: "integer"
                               format: "int64"
-                              nullable: "true"
                               example: "10"
                             unit:
                               description: "個数単位。未使用ならnull。"
                               type: "string"
-                              nullable: "true"
                               example: "粒"
         400:
           description: "失敗時のレスポンス"
@@ -219,7 +213,6 @@ paths:
               properties:
                 yyyymmdd:
                   type: "array"
-                  nullable: "true"
                   items:
                     type: "object"
                     properties:
@@ -230,7 +223,6 @@ paths:
                       remain:
                         type: "integer"
                         format: "int64"
-                        nullable: "true"
                         example: "3"
         400:
           description: "失敗時のレスポンス"
