@@ -238,12 +238,12 @@ paths:
       parameters:
       - name: "email"
         required: true
-        in: "query"
+        in: "formData"
         type: "string"
         description: "ログイン用のメールアドレス"
       - name: "password"
         required: true
-        in: "query"
+        in: "formData"
         type: "string"
         description: "パスワード"
       responses:
@@ -654,13 +654,13 @@ paths:
         - client: []
       parameters:
       - name: "password"
-        in: "query"
+        in: "formData"
         description: "新パスワード"
         required: true
         type: "string"
         format: "password"
       - name: "password_confirmation"
-        in: "query"
+        in: "formData"
         description: "新パスワード（確認用）"
         required: true
         type: "string"
