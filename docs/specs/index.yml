@@ -273,7 +273,7 @@ paths:
     patch:
       tags: ["customer"]
       summary: "プロフィール更新API"
-      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける"
       security:
         - access-token: []
         - uid: []
@@ -344,12 +344,12 @@ paths:
       parameters:
       - name: "email"
         required: true
-        in: "query"
+        in: "formData"
         type: "string"
         description: "ログイン用のメールアドレス"
       - name: "password"
         required: true
-        in: "query"
+        in: "formData"
         type: "string"
         description: "パスワード"
       responses:
@@ -390,7 +390,7 @@ paths:
     get:
       tags: ["customer"]
       summary: "予約キャンセルAPI"
-      description: "予約をキャンセルするAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "予約をキャンセルするAPI"
       parameters:
       - name: "menu_id"
         in: "query"
@@ -503,13 +503,13 @@ paths:
         - client: []
       parameters:
       - name: "password"
-        in: "query"
+        in: "formData"
         description: "新パスワード"
         required: true
         type: "string"
         format: "password"
       - name: "password_confirmation"
-        in: "query"
+        in: "formData"
         description: "新パスワード（確認用）"
         required: true
         type: "string"
@@ -535,7 +535,7 @@ paths:
     get:
       tags: ["reservation"]
       summary: "予約一覧取得API"
-      description: "予約情報を一覧で取得するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "予約情報を一覧で取得するAPI"
       parameters:
       - name: "page"
         in: "query"
@@ -652,7 +652,7 @@ paths:
     get:
       tags: ["reservation"]
       summary: "予約情報取得API"
-      description: "指定されたidの予約情報を取得するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "指定されたidの予約情報を取得するAPI"
       parameters:
       - name: "id"
         in: "path"
@@ -683,7 +683,7 @@ paths:
     delete:
       tags: ["reservation"]
       summary: "予約削除API"
-      description: "予約情報を削除するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "予約情報を削除するAPI"
       parameters:
       - name: "id"
         in: "path"
