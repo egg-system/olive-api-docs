@@ -31,7 +31,7 @@ securityDefinitions:
 paths:
   /api/shops/{id}:
     get:
-      tags: ["shun API"]
+      tags: ["shop"]
       summary: "店舗情報API"
       description: "指定されたidの店舗情報を返します"
       parameters:
@@ -45,35 +45,7 @@ paths:
         200:
           description: "成功時のレスポンス"
           schema:
-            type: "object"
-            properties:
-              id:
-                type: "integer"
-                format: "int64"
-                example: "1"
-              name:
-                type: "string"
-                example: "オリーブボディケア　たまプラーザ店"
-              open_at:
-                description: "営業開始時間"
-                type: "string"
-                format: "hh"
-                example: "10"
-              close_at:
-                description: "営業終了時間"
-                type: "string"
-                format: "hh"
-                example: "20"
-              break_from:
-                description: "休憩開始時間"
-                type: "string"
-                format: "hh"
-                example: "14"
-              break_to:
-                description: "休憩終了時間"
-                type: "string"
-                format: "hh"
-                example: "16"
+            $ref: "#/definitions/Shop"
         400:
           description: "失敗時のレスポンス"
           schema:
@@ -84,7 +56,7 @@ paths:
                 example: "request bad error"
   /api/shops/{id}/menus:
     get:
-      tags: ["shun API"]
+      tags: ["shop"]
       summary: "メニュー一覧API"
       description: "指定されたidの店舗で利用できるメニュー一覧を返します"
       parameters:
@@ -112,49 +84,7 @@ paths:
                 menus:
                   type: "array"
                   items:
-                    type: "object"
-                    properties:
-                      id:
-                        type: "integer"
-                        format: "int64"
-                        example: "1"
-                      name:
-                        type: "string"
-                        example: "通常整体コース"
-                      price:
-                        description: "税抜き価格"
-                        type: "integer"
-                        format: "int64"
-                        example: 6000
-                      minutes:
-                        description: "施術時間"
-                        type: "integer"
-                        format: "int64"
-                        example: 60
-                      description:
-                        example:
-                      options:
-                        type: "array"
-                        items:
-                          type: "object"
-                          properties:
-                            id:
-                              type: "integer"
-                              format: "int64"
-                              example: "1"
-                            name:
-                              type: "string"
-                              example: "耳つぼジュエリー"
-                            description:
-                              example:
-                            price:
-                              description: "税抜き価格"
-                              type: "integer"
-                              format: "int64"
-                              example: 2000
-                            is_mimitsubo_jewelry:
-                              type: "boolean"
-                              example: false
+                    $ref: "#/definitions/ShopMenu"
         400:
           description: "失敗時のレスポンス"
           schema:
@@ -165,7 +95,7 @@ paths:
                 example: "request bad error"
   /api/shops/{id}/dates:
     get:
-      tags: ["shun API"]
+      tags: ["shop"]
       summary: "予約カレンダーAPI"
       description: "指定された店舗id、メニューidから予約カレンダーを表示するための情報を返します。\nレスポンスのjsonは日付でグルーピングされた予約枠になります。"
       parameters:
@@ -212,16 +142,7 @@ paths:
                 yyyymmdd:
                   type: "array"
                   items:
-                    type: "object"
-                    properties:
-                      start_time:
-                        type: "string"
-                        format: "yyyyMMddhhmm"
-                        example: "201902281030"
-                      remain:
-                        type: "integer"
-                        format: "int64"
-                        example: "3"
+                    $ref: "#/definitions/ShopDate"
         400:
           description: "失敗時のレスポンス"
           schema:
@@ -230,96 +151,9 @@ paths:
               error:
                 type: "string"
                 example: "request bad error"
-  /api/customers/sign_in:
-    post:
-      tags: ["hikaru API"]
-      summary: "ログインAPI"
-      description: "ログイン情報を取得するAPI。返り値はログインしたユーザー情報になる。<br>レスポンスヘッダに認証情報が付与されるため、それを元に認証する"
-      parameters:
-      - name: "email"
-        required: true
-        in: "formData"
-        type: "string"
-        description: "ログイン用のメールアドレス"
-      - name: "password"
-        required: true
-        in: "formData"
-        type: "string"
-        description: "パスワード"
-      responses:
-        200:
-          description: "成功時のレスポンス"
-          headers:
-            uid:
-              type: "string"
-              description: "認証したユーザーの一意性を担保するid。通常の場合、emailになる"
-            access-token:
-              type: "string"
-              description: "アクセストークン。各ユーザーごとに発行される。期限がある"
-            client:
-              type: "string"
-              description: "同一のクライアントであることを証明するためのランダム文字列"
-          schema:
-            type: "object"
-            properties:
-              data:
-                type: "object"
-                example:
-                  id: 1
-                  email: "test@test.com"
-                  provider: "email"
-                  tel: "09010001000"
-                  uid: "test@test.com"
-                  first_name: "顧客"
-                  last_name: "高橋"
-                  first_kana: "コキャク"
-                  last_kana: "タカハシ"
-                  fixed_line_tel:
-                  gender:
-                  can_receive_mail: true
-                  is_receive_thank_you_letter: false
-                  can_receive_dm_mail: true
-                  birthday: "1985-01-01"
-                  zip_code: "160-0022"
-                  prefecture: "東京都"
-                  city: "新宿区新宿１−１−１　なんとかビル１階"
-                  address: "東京都 新宿区新宿１−１−１　なんとかビル１階"
-                  comment: "コメントです"
-                  first_visit_store_id: 1
-                  last_visit_store_id: 2
-                  first_visited_at: "2019-01-01"
-                  last_visited_at: "2019-02-01"
-                  card_number: "999"
-                  introducer: "山田"
-                  searchd_by: "オリーブ"
-                  has_registration_card: false
-                  children_count: 1
-                  occupation_id: 1
-                  zoomancy_id: 1
-                  baby_age_id: 1
-                  size_id: 1
-                  visit_reason_id: 1
-                  nearest_station_id: 1
-                  allow_password_change: false
-        400:
-          description: "パラメータエラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Bad Request"
-        401:
-          description: "認証エラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Unauthorized"
   /api/customers:
     post:
-      tags: ["additional"]
+      tags: ["customer"]
       summary: "ユーザー作成API"
       description: "ユーザーを作成するAPI。"
       parameters:
@@ -437,9 +271,9 @@ paths:
                 type: "string"
                 example: "Bad Request"
     patch:
-      tags: ["hikaru API"]
+      tags: ["customer"]
       summary: "プロフィール更新API"
-      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "プロフィールを更新するAPI。パスワード更新にはトークンを使うためパスワード更新とはAPIを分ける"
       security:
         - access-token: []
         - uid: []
@@ -502,11 +336,61 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
+  /api/customers/sign_in:
+    post:
+      tags: ["customer"]
+      summary: "ログインAPI"
+      description: "ログイン情報を取得するAPI。返り値はログインしたユーザー情報になる。<br>レスポンスヘッダに認証情報が付与されるため、それを元に認証する"
+      parameters:
+      - name: "email"
+        required: true
+        in: "formData"
+        type: "string"
+        description: "ログイン用のメールアドレス"
+      - name: "password"
+        required: true
+        in: "formData"
+        type: "string"
+        description: "パスワード"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          headers:
+            uid:
+              type: "string"
+              description: "認証したユーザーの一意性を担保するid。通常の場合、emailになる"
+            access-token:
+              type: "string"
+              description: "アクセストークン。各ユーザーごとに発行される。期限がある"
+            client:
+              type: "string"
+              description: "同一のクライアントであることを証明するためのランダム文字列"
+          schema:
+            type: "object"
+            properties:
+              data:
+                $ref: "#/definitions/Customer"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
   /api/customers/cancel/:
     get:
-      tags: ["hikaru API"]
+      tags: ["customer"]
       summary: "予約キャンセルAPI"
-      description: "予約をキャンセルするAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "予約をキャンセルするAPI"
       parameters:
       - name: "menu_id"
         in: "query"
@@ -541,7 +425,7 @@ paths:
                 example: "Unauthorized"
   /api/customers/validate_token:
     get:
-      tags: ["additional"]
+      tags: ["customer"]
       summary: "ユーザー認証API"
       description: "ユーザー認証を行う"
       parameters:
@@ -565,42 +449,7 @@ paths:
             example:
               success: "ok"
               data:
-                id: 1
-                first_name: "顧客"
-                last_name: "高橋"
-                first_kana: "コキャク"
-                last_kana: "タカハシ"
-                tel: "09010001000"
-                fixed_line_tel: null
-                gender: null
-                can_receive_mail: true
-                is_receive_thank_you_letter: false
-                can_receive_dm_mail: true
-                birthday: "1985-01-01"
-                zip_code: "160-0022"
-                prefecture: "東京都"
-                city: "新宿区新宿１−１−１　なんとかビル１階"
-                address: "東京都 新宿区新宿１−１−１　なんとかビル１階"
-                comment: "コメントです"
-                first_visit_store_id: 1
-                last_visit_store_id: 2
-                first_visited_at: "2019-01-01"
-                last_visited_at: "2019-02-01"
-                card_number: "999"
-                introducer: "山田"
-                searchd_by: "オリーブ"
-                has_registration_card: false
-                children_count: 1
-                occupation_id: 1
-                zoomancy_id: 1
-                baby_age_id: 1
-                size_id: 1
-                visit_reason_id: 1
-                nearest_station_id: 1
-                email: "test@test.com"
-                provider: "email"
-                uid: "test@test.com"
-                allow_password_change: false
+                $ref: "#/definitions/Customer"
         401:
           description: "認証エラー"
           schema:
@@ -609,9 +458,9 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-  /api/customer/password:
+  /api/customers/password:
     post:
-      tags: ["hikaru API"]
+      tags: ["customer"]
       summary: "パスワードリセットAPI"
       description: "ユーザーのパスワードをリセットするAPI。<br>成功した場合はサーバサイドからメールでユーザーに通知する。<br>メール文面のurlに認証情報が追記されるため、そこから変更可能"
       parameters:
@@ -645,7 +494,7 @@ paths:
                 type: "string"
                 example: "Bad Request"
     patch:
-      tags: ["hikaru API"]
+      tags: ["customer"]
       summary: "パスワード更新API"
       description: "パスワードを更新するAPI。サーバイドでトークンのチェックを行う。パスワード更新にはトークンを使うためプロフィール更新とはAPIを分ける"
       security:
@@ -683,8 +532,47 @@ paths:
                 type: "string"
                 example: "Bad Request"
   /api/reservations:
+    get:
+      tags: ["reservation"]
+      summary: "予約一覧取得API"
+      description: "予約情報を一覧で取得するAPI"
+      parameters:
+      - name: "page"
+        in: "query"
+        description: "ページ数"
+        required: false
+        type: "integer"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              total_pages:
+                type: "integer"
+                example: 1
+              data:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Reservation"
+        400:
+          description: "パラメータエラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Bad Request"
+        401:
+          description: "認証エラー"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "Unauthorized"
     post:
-      tags: ["hikaru API"]
+      tags: ["reservation"]
       summary: "予約確定API"
       description: "予約を確定するAPI。現状、ユーザー認証不要。後々、会員の場合のみ認証する用、修正予定"
       parameters:
@@ -760,90 +648,11 @@ paths:
               error:
                 type: "string"
                 example: "Unauthorized"
-    get:
-      tags: ["additional"]
-      summary: "予約一覧取得API"
-      description: "予約情報を一覧で取得するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
-      parameters:
-      - name: "page"
-        in: "query"
-        description: "ページ数"
-        required: false
-        type: "integer"
-      responses:
-        200:
-          description: "成功時のレスポンス"
-          schema:
-            type: "object"
-            properties:
-              total_pages:
-                type: "integer"
-                example: 1
-              data:
-                type: "array"
-                items:
-                  type: "object"
-                  example:
-                    id: 1
-                    state: "予約中"
-                    store:
-                      id: 1
-                      store_type: "owned"
-                      name: "女性専門の治療院オリーヴボディケアたまプラーザ店"
-                      address: "横浜市青葉区新石川3-15-16 メディカルモールたまプラーザ301"
-                      tel: "045-530-1688"
-                      mail: "info@olivebodycare.jp"
-                      url: "https://olivebodycare.healthcare/salon/tamaplaza"
-                      open_at: 10
-                      close_at: 20
-                      break_from: null
-                      break_to: null
-                      created_at: "2019-09-14T22:48:33.000+09:00"
-                      updated_at: "2019-09-14T22:48:33.000+09:00"
-                      zip_code: null
-                    start_at: "2019-09-30T10:00:00.000+09:00"
-                    end_at: "2019-09-30T11:00:00.000+09:00"
-                    details:
-                      - id: 1
-                        menu:
-                          id: 1
-                          name: "通常整体コース"
-                          description: null
-                          fee: 6000
-                          service_minutes: 60
-                          start_at: "2019-01-01"
-                          end_at: null
-                          menu_category_id: 1
-                          skill_id: 1
-                          memo: null
-                          created_at: "2019-09-14T22:48:33.000+09:00"
-                          updated_at: "2019-09-14T22:48:33.000+09:00"
-                        option_names:
-                          -
-                    coupons:
-                      -
-                    fee: 6000
-        400:
-          description: "パラメータエラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Bad Request"
-        401:
-          description: "認証エラー"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "string"
-                example: "Unauthorized"
   /api/reservations/{id}:
     get:
-      tags: ["additional"]
+      tags: ["reservation"]
       summary: "予約情報取得API"
-      description: "指定されたidの予約情報を取得するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "指定されたidの予約情報を取得するAPI"
       parameters:
       - name: "id"
         in: "path"
@@ -854,48 +663,7 @@ paths:
           200:
             description: "成功時のレスポンス"
             schema:
-              type: "object"
-              example:
-                data:
-                  id: 1
-                  state: "予約中"
-                  store:
-                    id: 1
-                    store_type: "owned"
-                    name: "女性専門の治療院オリーヴボディケアたまプラーザ店"
-                    address: "横浜市青葉区新石川3-15-16 メディカルモールたまプラーザ301"
-                    tel: "045-530-1688"
-                    mail: "info@olivebodycare.jp"
-                    url: "https://olivebodycare.healthcare/salon/tamaplaza"
-                    open_at: 10
-                    close_at: 20
-                    break_from: null
-                    break_to: null
-                    created_at: "2019-09-14T22:48:33.000+09:00"
-                    updated_at: "2019-09-14T22:48:33.000+09:00"
-                    zip_code: null
-                  start_at: "2019-09-30T10:00:00.000+09:00"
-                  end_at: "2019-09-30T11:00:00.000+09:00"
-                  details:
-                    - id: 1
-                      menu:
-                        id: 1
-                        name: "通常整体コース"
-                        description: null
-                        fee: 6000
-                        service_minutes: 60
-                        start_at: "2019-01-01"
-                        end_at: null
-                        menu_category_id: 1
-                        skill_id: 1
-                        memo: null
-                        created_at: "2019-09-14T22:48:33.000+09:00"
-                        updated_at: "2019-09-14T22:48:33.000+09:00"
-                      option_names:
-                        -
-                  coupons:
-                    -
-                  fee: 6000
+              $ref: "#/definitions/Reservation"
           400:
             description: "パラメータエラー"
             schema:
@@ -913,9 +681,9 @@ paths:
                   type: "string"
                   example: "Unauthorized"
     delete:
-      tags: ["additional"]
+      tags: ["reservation"]
       summary: "予約削除API"
-      description: "予約情報を削除するAPI。<br>※ユーザー認証はcookieにセットされたセッションIDで行う。"
+      description: "予約情報を削除するAPI"
       parameters:
       - name: "id"
         in: "path"
@@ -949,115 +717,334 @@ paths:
                 example: "Unauthorized"
 
 definitions:
-  Reservation:
+  Shop:
     type: "object"
-    description: ""
+    description: "店舗情報"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "店舗ID"
+        example: 1
+      name:
+        type: "string"
+        description: "店舗名"
+        example: "オリーブボディケア　たまプラーザ店"
+      open_at:
+        type: "string"
+        format: "hh"
+        description: "営業開始時間"
+        example: "10"
+      close_at:
+        type: "string"
+        description: "営業終了時間"
+        format: "hh"
+        example: "20"
+      break_from:
+        type: "string"
+        description: "休憩開始時間"
+        format: "hh"
+        example: "14"
+      break_to:
+        type: "string"
+        description: "休憩終了時間"
+        format: "hh"
+        example: "16"
+  ShopMenu:
+    type: "object"
+    description: "店舗で利用できるメニュー"
+    properties:
+      id:
+        type: "integer"
+        description: "メニューID"
+        format: "int64"
+        example: "1"
+      name:
+        type: "string"
+        description: "メニュー名"
+        example: "通常整体コース"
+      price:
+        type: "integer"
+        description: "税抜き価格"
+        format: "int64"
+        example: 6000
+      minutes:
+        type: "integer"
+        description: "施術時間"
+        format: "int64"
+        example: 60
+      description:
+        type: "string"
+        description: "メニュー説明"
+        example:
+      options:
+        type: "array"
+        description: "オプション"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              description: "オプションID"
+              format: "int64"
+              example: "1"
+            name:
+              type: "string"
+              description: "オプション名"
+              example: "耳つぼジュエリー"
+            description:
+              type: "string"
+              description: "オプション説明"
+              example:
+            price:
+              type: "integer"
+              description: "税抜き価格"
+              format: "int64"
+              example: 2000
+            is_mimitsubo_jewelry:
+              type: "boolean"
+              example: false
+  ShopDate:
+    type: "object"
+    description: "予約カレンダー"
     properties:
       start_time:
         type: "string"
-        format: "yyyymmddhh"
-        description: "予約した施術の開始時刻"
-        example: "2019022810"
-      total_minutes:
-        type: integer
-        example: 60
-        description: "合計施術時間"
+        format: "yyyyMMddhhmm"
+        example: "201902281030"
+      remain:
+        type: "integer"
+        format: "int64"
+        example: "3"
+  Customer:
+    type: "object"
+    description: "ユーザー情報"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "ユーザーID"
+        example: 1
+      email:
+        type: "string"
+        description: "メールアドレス"
+        example: "test@test.com"
+      provider:
+        type: "string"
+        example: "email"
+      tel:
+        type: "string"
+        description: "電話番号"
+        example: "09010001000"
+      uid:
+        type: "string"
+        example: "test@test.com"
+      first_name:
+        type: "string"
+        description: "名前"
+        example: "顧客"
+      last_name:
+        type: "string"
+        description: "苗字"
+        example: "高橋"
+      first_kana:
+        type: "string"
+        description: "名前カナ"
+        example: "コキャク"
+      last_kana:
+        type: "string"
+        description: "苗字カナ"
+        example: "タカハシ"
+      fixed_line_tel:
+        example:
+      gender:
+        description: "性別"
+        example:
+      can_receive_mail:
+        type: "boolean"
+        example: true
+      is_receive_thank_you_letter:
+        type: "boolean"
+        example: false
+      can_receive_dm_mail:
+        type: "boolean"
+        example: true
+      birthday:
+        type: "string"
+        description: "誕生日"
+        example: "1985-01-01"
+      zip_code:
+        type: "string"
+        description: "郵便番号"
+        example: "160-0022"
+      prefecture:
+        type: "string"
+        description: "都道府県"
+        example: "東京都"
+      city:
+        type: "string"
+        description: "市区町村"
+        example: "新宿区"
+      address:
+        type: "string"
+        description: "番地"
+        example: "新宿区新宿１−１−１　なんとかビル１階"
+      comment:
+        type: "string"
+        description: "コメント"
+        example: "コメントです"
+      first_visit_store_id:
+        type: "integer"
+        format: "int64"
+        description: "最初に訪れた店舗ID"
+        example: 1
+      last_visit_store_id:
+        type: "integer"
+        format: "int64"
+        description: "最後に訪れた店舗ID"
+        example: 1
+      first_visited_at:
+        type: "string"
+        description: "最初に訪れた日付"
+        example: "2019-01-01"
+      last_visited_at:
+        type: "string"
+        description: "最後に訪れた日付"
+        example: "2019-02-01"
+      card_number:
+        type: "string"
+        example: "999"
+      introducer:
+        type: "string"
+        description: "紹介者"
+        example: "山田"
+      searchd_by:
+        type: "string"
+        example: "オリーブ"
+      has_registration_card:
+        type: "boolean"
+        example: false
       children_count:
-        type: integer
-        example: 3
-        description: "お子様連れ
-                      0:なし
-                      1:1人
-                      2:2人
-                      3:3人
-                      4:4人
-                      5:5人以上"
-
-      pregnant_state_id:
-        type: integer
-        example: 3
-        description: "妊娠ステータスID
-                    1：妊娠なし
-                    2：4ヶ月未満
-                    3：5ヶ月
-                    4：6ヶ月
-                    5：7ヶ月
-                    6：8ヶ月"
-      reservation_comment:
-        type: string
-        example: ""
-        description: "サロンへのご要望・ご相談"
-      menus:
+        type: "integer"
+        description: "お連れのお子様の数"
+        example: 1
+      occupation_id:
+        type: "integer"
+        example: 1
+      zoomancy_id:
+        type: "integer"
+        example: 1
+      baby_age_id:
+        type: "integer"
+        example: 1
+      size_id:
+        type: "integer"
+        example: 1
+      visit_reason_id:
+        type: "integer"
+        example: 1
+      nearest_station_id:
+        type: "integer"
+        example: 1
+      allow_password_change:
+        type: "boolean"
+        example: false
+  Reservation:
+    type: "object"
+    description: "予約情報"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "予約ID"
+        example: 1
+      state:
+        type: "string"
+        description: "状態"
+        example: "予約中"
+      store:
+        $ref: "#/definitions/Shop"
+      start_at:
+        type: "string"
+        format: "date-time"
+        description: "開始時刻"
+        example: "2019-09-30T10:00:00.000+09:00"
+      end_at:
+        type: "string"
+        format: "date-time"
+        description: "終了時刻"
+        example: "2019-09-30T11:00:00.000+09:00"
+      details:
         type: "array"
         items:
-          $ref: "#/definitions/SelectedMenu"
+          $ref: "#/definitions/ReservationMenu"
       coupons:
         type: "array"
         items:
           $ref: "#/definitions/UsedCoupon"
-
-
-  Customer:
+      fee:
+        type: "integer"
+        description: "料金"
+        example: 6000
+  ReservationMenu:
     type: "object"
-    properties:
-      email:
-        description: "メールアドレス"
-        type: "string"
-        example: "test@aaa.com"
-      password:
-        description: "パスワード：新規登録かつ会員登録を行わない場合はnull"
-        type: "string"
-        format: "password"
-        example: "exT98X"
-      first_name:
-        description: "苗字"
-        type: "string"
-        example: "山田"
-      last_name:
-        description: "名前"
-        type: "string"
-        example: "太郎"
-      first_kana:
-        description: "苗字カナ"
-        type: "string"
-        example: "ヤマダ"
-      last_kana:
-        description: "名前カナ"
-        type: "string"
-        example: "タロウ"
-      tel:
-        description: "電話番号（ハイフンなし）"
-        type: "string"
-        example: "09099004411"
-      has_membership:
-        description: "会員登録の有無。"
-        type: "boolean"
-      can_receive_mail:
-        description: "メール受け取り可否"
-        type: "boolean"
-  SelectedMenu:
-    type: "object"
+    description: "予約情報詳細"
     properties:
       id:
         type: "integer"
         format: "int64"
+        description: "予約詳細ID"
         example: 1
-      options:
+      name:
+        type: "string"
+        example: "通常整体コース"
+      description:
+        type: "string"
+        example:
+      fee:
+        type: "integer"
+        description: "料金"
+        example: 6000
+      service_minutes:
+        type: "integer"
+        description: "時間（分）"
+        example: 60
+      start_at:
+        type: "string"
+        format: "date"
+        description: "開始日時"
+        example: "2019-01-01"
+      end_at:
+        type: "string"
+        format: "date"
+        description: "終了日時"
+        example:
+      menu_category_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      skill_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      memo:
+        type: "string"
+        description: "メモ"
+        example:
+      created_at:
+        type: "string"
+        format: "date-time"
+        description: "作成時刻"
+        example: "2019-09-14T22:48:33.000+09:00"
+      updated_at:
+        type: "string"
+        format: "date-time"
+        description: "更新時刻"
+        example: "2019-09-14T22:48:33.000+09:00"
+      option_names:
         type: "array"
         items:
-          $ref: "#/definitions/SelectedOption" # Storeを呼び出す
-  SelectedOption:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-        example: 1
-      count:
-        type: "integer"
-        format: "int64"
-        example: 1
-        description: "耳つぼジュエリーの場合に個数を入れる。それ以外はnull"
+          example:
   UsedCoupon:
     type: "object"
     properties:
@@ -1065,30 +1052,3 @@ definitions:
         type: "integer"
         format: "int64"
         example: 1
-  CouponType:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-        example: 1
-      name:
-        type: "string"
-        example: "施術"
-        description: "施術/インデプス/ブライダルエステ"
-      remains:
-        type: "array"
-        description: "有効期限ごとの残り回数券数"
-        items:
-          type: "object"
-          properties:
-            count:
-              type: "integer"
-              format: "int64"
-              example: "5"
-              description: "残り回数券数"
-            expire_at:
-              type: "integer"
-              format: "int64"
-              example: 20190331
-              description: "有効期限"
